@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="Projet de S4 (DUT Informatique) ayant pour but la mise en place de l'algorithme de Dijkstra.">
+		<meta name="author" content="Kyllian CHARTRAIN, Lucas ZETEA et S&eacute;bastien BONATI">
+
+		<title>Dijkstra - Projet de S4</title>
+
+		<!-- IMPORTS JS -->
+		<script src="js/imports/jquery.js"></script>
+		<script src="js/imports/bootstrap.min.js"></script>
+
+
+
+		<!-- Nos JS -->
+		<script src="js/main.js"></script>
+		<script src="js/functions.js"></script>
+		<script src="js/resolution.js"></script>
+		<script src="js/dijkstra.js"></script>
+
+		<!-- IMPORTS CSS -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- Notre CSS -->
+		<link href="css/main.css" rel="stylesheet">
+
+	</head>
+	<body>
+
+		<!-- Navigation -->
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="container">
+
+				<div class="navbar-header">
+					<!-- TODO Trouver un nom au projet -->
+					<span id="titre" class="navbar-brand" href="#">Dijkstra</span>
+					<button id="button-mobile-bar" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li>
+							<a onclick="window.scrollTo(0,0);" class="main-menu-item" id="mainTab" href="#PrezMain" data-toggle="tab" >Pr&eacute;sentation</a>
+						</li>
+						<li>
+							<a onclick="window.scrollTo(0,0);" class="main-menu-item" href="#Dijkstra" data-toggle="tab" >Dijkstra</a>
+						</li>
+						<li>
+							<a onclick="window.scrollTo(0,0);" class="main-menu-item" href="#AnalyseMain" data-toggle="tab" >Analyses</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Contenu de la page -->
+		<div class="container" id="main">
+			<div id="myTabContent" class="tab-content">
+
+				<!-- Onglet 1 -->
+				<div class="tab-pane fade active in" id="PrezMain">
+					<div class="jumbotron" id="Prez">
+						<h1>Dijkstra</h1>
+						<!-- Partie présentation du projet -->
+						<p class="justify">Ce projet a eu pour but la mise en place de l'algorithme de recherche d'un plus court chemin dans un graphe, plus connu sous le nom d'Algorithme de Dijkstra. <br /> Nous avons r&eacute;alis&eacute; une partie analyse de cet algorithme pour mieux en comprendre le fonctionnement et nous avons ajout&eacute; un autre algorithme proche, celui du chemin au poids le plus important.</p>
+					</div>
+
+					<div class="row">
+						<div class="col-lg-12" id="Apropos">
+							<h3>&Agrave; propos de nous</h3>
+							<p class="justify">Nous sommes un groupe de trois &eacute;tudiants : Kyllian CHARTRAIN, Lucas ZETEA et S&eacute;bastien BONATI. <br /> Nous avons r&eacute;alis&eacute; ce projet lors de notre semestre 4 de DUT Informatique en 2017 &agrave; l'IUT de Villetaneuse, Universit&eacute; Paris 13. Nous avons lors de ce semestre choisi le groupe de math&eacute;matiques avanc&eacute;es o&ugrave; divers projets relatifs aux math&eacute;matiques &eacute;taient propos&eacute;s. Nous avons choisi celui-ci parce qu'il nous permettait de mettre en oeuvre une r&eacute;flexion sur la mod&eacute;lisation des graphes et de mettre en pratique nos connaissances naissantes en JavaScript. Nous avons sur ce projet utilis&eacute; les librairies JQuery, BootStrap et MathJax.</p>
+							<p class="justify">Nous diffusons ce projet sous licence MIT.</p>
+							<!-- TODO Finir de remplir les librairies utilisées -->
+						</div>
+					</div>
+				</div>
+
+				<!-- Onglet 2 -->
+				<div class="tab-pane fade" id="Dijkstra">
+
+
+					<div class="row">
+						<div class="col-lg-12" id="Donnees">
+							<h3>Entr&eacute;e des donn&eacute;es :</h3>
+							<p class="justify">Veuillez entrer le nombre NB de sommets que poss&egrave;de votre graphe : &nbsp;
+								<input id="nbSommets" type="number" min="3" max="99" value="3" style="min-width:45px"/>
+								<input id="btnNbSommets" type="button" class="btn btn-secondary" value="Valider" /><br />
+
+								<span id="Pb_nbSommets" style="display: none;">Nombre de sommets NB non valide ! (2 &lsaquo; NB &lsaquo; 100)</span>
+								<!-- Attention les min et max n'empèchent pas une saisie au clavier hors bornes ! => Vérifier avec le JS -->
+							</p>
+							<p id='askNomSommets' class="justify elemCache"> Voulez-vous nommer les points manuellement ? &nbsp;
+								<input id="btnOui" type="button" class="btn btn-secondary" value="Oui" />
+								<input id="btnNon" type="button" class="btn btn-secondary" value="Non" /> <br />
+							</p>
+							<p id="askPoids" class="justify elemCache">
+								Veuillez entrer le poids de chaque arc dans la matrice qui suit
+							</p>
+							<p id="legende" class="justify elemCache">
+								Légende :
+								<br /><span style="display:inline-block; margin-left:2em;">-1 : Pas de lien entre deux sommets</span>
+								<br /><span style="display:inline-block; margin-left:2em;">0&nbsp;: Poids de 0 entre deux sommets</span>
+								<br /><span style="display:inline-block; margin-left:2em;">X (avec X &gt; 0) : Poids de X entre deux sommets</span>
+							<p/>
+							<div id="matriceAff"></div>
+							<span id="Pb_askPoids" class="elemCache" style="display: none;">
+								Matrice incomplète ou valeurs erronées, veuillez vérifier votre saisie. <br />
+							</span>
+							<input id="btnValiderMatrice" type="button" class="elemCache btn btn-secondary" value="Valider" />
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-lg-12" id="SelectAlgo">
+							<h3>S&eacute;lection de l'algorithme :</h3>
+							<p class="justify">
+								<label><input class="choixAlgo" type="radio" name="choixAlgo" value="plusCourt" checked="checked"> Plus court chemin </label> &nbsp; &nbsp;
+								<label><input class="choixAlgo" type="radio" name="choixAlgo" value="plusLourd"> Chemin au poids le plus important </label><br />
+								<input id="btnChoixAlgo" type="button" class="btn btn-secondary" value="Valider" /><br />
+							</p>
+						</div>
+						<div class="col-lg-12" id="SelectDepart">
+							<h3>S&eacute;lection du point de départ :</h3>
+							<p class="justify">
+								<input id="nomSommet" type="text" placeholder="Nom du sommet"/>
+								<input id="btnChoixDepart" type="button" class="btn btn-secondary" value="Valider" /><br />
+							</p>
+						</div>
+					</div>
+
+
+
+					<div class="row">
+						<div class="col-lg-12" id="AffSol">
+							<h3>Affichage de la solution :</h3>
+							<p id="legendeSol" class="justify elemCache">
+								Légende :
+								<br /><span style="display:inline-block; margin-left:2em;">D &nbsp;&nbsp;: Distance</span>
+								<br /><span style="display:inline-block; margin-left:2em;">PP : Point précédent</span><br />
+							<p/>
+							<div id="solAff"></div><br />
+							<div id="solAffDetails"></div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Onglet 3 -->
+				<div class="tab-pane fade" id="AnalyseMain">
+					<div class="row">
+						<div class="col-lg-12" id="Analyse">
+							<!-- Partie analyse du projet -->
+							<h3>Algorithme de Dijkstra</h3>
+							<p class="justify">
+								<h3>Q1 - Donner, en fonction des nombres de sommets et d’arcs de G :</h3>
+									<h4>a)le nombre N d’itérations du second point de l’algorithme.</h4>
+									<p class="justify">
+										N itérations qui est égale à X, X étant le  nombre de sommets.<br/>	
+									</p>
+									<h4>b)Une majoration du nombre d’opérations élémentaires (tests, opérations arithmétiques) effectuées par l’algorithme.</h4>
+									<p class="justify">
+										- pour une itération : on va tester si tous les sommets sont marqués ou pas, X tests,</br>
+										- puis pour chaque sommet non marqué, on vérifie s’il est successeur direct du sommet sur lequel on travaille (dernier sommet marqué),  soit [X - (nombre de sommets marqués)] tests, </br>
+										- si les sommets sont successeurs directs on fait une addition, r =  δ(x) + L(x, y),</br>
+										- le dernier test consiste à vérifier si r &lt; δ(y), si il est alors δ(y) devient égale à r.</br>
+										conclusion : Pour l’algorithme, dans le pire des cas on fait X itérations, soit au final une complexité en O(n²), n étant le nombre d’éléments (sommets) puisqu’on a une boucle dans une boucle d’où n*n = n².<br/>	
+									</p>
+
+								<h3>Q2</h3>
+									<h4>a) Quel est l’ensemble M1 ? Combien vaut δ1(m1) ? Quels sommets x vérifient δ1(x) &lt; ∞?</h4>
+									<p class="justify">
+										L’ensemble M1 = {m1}. δ1(m1) = δ0(m1). Les sommets qui sont successeurs de s (1ère itération et s étant le point sélectionné), 
+									</p>
+									<h4>b) Étant donné x ∈ X que peut-on dire de la suite δ1(x), δ2(x), · · · , δN (x) ?</h4>
+									<p class="justify">
+										Comme on recherche un δ(y) toujours plus petit, la suite décroît jusqu'à devenir constante, à ce moment là δN(x) = δi(xi) avec xi le sommet x marqué à la ième itération.
+									</p>
+									<h4>c) Si δi(mi) = ∞ pour un certain i ∈ {1, · · · , N} que peut-on dire des δj (mj ) pour j ≥ i ?</h4>
+									<p class="justify">
+										si δi(mi) = ∞ alors tous les points qui suivront n’auront pas non plus de lien avec s et donc δj(mj) = ∞ pour j ≥ i 
+									</p>
+
+								<h3>Q3 - Soient i ∈ {1, · · · , N} et x ∈ X.</h3>
+									<h4>a) Montrer que si δi(x) &lt; ∞ alors il existe un chemin μ = [s, · · · , x] joignant s à x tel que</h4>
+									<h4>(i) μ ne passe que par des sommets dans Mi, sauf éventuellement pour le dernier sommet x ;</h4>
+									<h4>(ii) L(μ) = δi(x).</h4>
+									<p class="justify">
+										(i) dans Mi nous avons tous les sommets qui ont été marqués précédemment , ils ne peuvent être marqués qu'à la condition d’être des successeurs d’un sommet précédemment marqué, ce qui nous amène à s, le sommet initial:  donc si x &lt; ∞ cela veut dire qu’il est lui-même successeur d’un sommet marqué, donc il y a bien un chemin μ composé des mi dans Mi</br>
+
+										(ii) δi(x) avec i l'itération à laquelle on rencontre pour la première fois x, c’est-à-dire x étant un successeur d’un sommet dans Mi donc il n’existera qu’un seul chemin μ reliant s à x de longueur L(μ) or δi(x) est la longueur du chemin reliant s à x donc δi(x) = L(μ)
+									</p>
+									
+									<h4>b)Réciproquement, montrer que s’il existe un chemin μ = [s, · · · , x] vérifiant la propriété (i) ci-dessus alors δi(x) &lt; ∞.</h4>
+									<p class="justify">
+										 δ(x) = ∞ s’il n’y a pas de chemin reliant s à x ou encore si x n’appartient pas au graphe connexe contenant s, donc s’il existe un chemin entre s et x, alors δi(x) &lt; ∞ 
+									</p>
+								
+								<h3>Q4 - Le but de cette question est de montrer par récurrence sur i que d(mi) = δi(mi), qui est la propriété centrale de l’algorithme.</h3>
+									<h4>a) Vérifier que ceci est vrai pour i = 1 (initialisation de la récurrence).</h4>
+									<p class="justify">
+										i = 1 : implique d(m1) avec m1 le sommet marqué à l’initialisation soit s,</br> or il est définit que d(s) = 0 et on a δ1(m1),</br> donc δ1(s) la distance de s à s soit 0, donc δ1(m1) = d(m1)
+									</p>
+									<h4>b) Supposons cette égalité vraie pour tout i ∈ {1, · · · , n}, où 1 ≤ n ≤ N − 1, et montrons qu’elle est alors vraie aussi pour i = n + 1 (hérédité).</br>
+										— Premier cas : d(mn+1) = ∞. Déduire du 3)a) que l’on a alors aussi δn+1(mn+1) = ∞.</br>
+										— Second cas : d(mn+1) &lt; ∞. Considérons un chemin μ quelconque de s à mn+1 et parcourons le à partir de s ;</br>
+										on note y le premier sommet rencontré qui n’est pas dans Mn et x le sommet précédant y sur μ ; autrement dit</h4>
+									<p class="justify">
+										- premier cas : d(mn+1) = ∞ sous entend qu'il n’existe pas de chemin entre s et x donc si on prend la question 3)a) ( si  δi(mi) &lt; ∞ alors on a une chemin de s à mi)  sa réciproque est donc s’il il n’y a pas de chemin entre s et mi alors  δi(mi) = ∞, on en déduit que si d(mn+1)  = ∞ alors δn+1(mn+1) = ∞
+
+										- second cas : d(mn+1) &lt; ∞  on a donc bien un chemin μ = [s, · · · , x, y, · · · , mn+1]</br>
+										L(μ) ≥ L([s, · · · , x, y]) : le chemin [s,.....x,y] est contenue dans μ donc forcément           
+										L(μ) ≥ L([s, · · · , x, y])  car les poids sont positifs (ou égales à 0 d’où le supérieur ou égal)</br>
+										L([s, · · · , x, y]) = d(x) + L(x, y) : d(x) est la longueur de s jusqu'à x soit L([s, · · · , x]) et on ajoute la distance entre x et y (d’où le supérieur ou égal)</br>
+										d(x) + L(x, y) ≥ δn+1(mn+1) : on sait que d(x) + L(x, y) =  δ(y), comme y est contenue dans μ on peut dire grâce à la question 2)b) que la suite δ1(x), δ2(x), · · · , δN+1(x) soit L(μ) est décroissante, donc on obtient bien l’inégalité suivante</br>
+										on a bien l’inégalité : L(μ) ≥ L([s, · · · , x, y]) ≥ d(x) + L(x, y) ≥ δn+1(mn+1)</br>
+										on sait que L(μ) = d(mn+1) </br>
+										grâce a l’inégalité on démontre que L(μ) ≥ δn+1(mn+1)</br>
+										donc d(mn+1) = δn+1(mn+1).</br>
+									</p>
+
+								<h3>Q5 - Déduire des questions précédentes que l’algorithme réalise bien ce que l’on souhaite.</h3>
+									<p class="justify">
+l’algorithme fonctionne car pour chaque  δn(xn) ≥ δn+1(xn+1) 
+donc a chaque fois qu’un sommet est marqué on est sur que d(x) est la plus courte longueur de s a x et ce peu importe le x 
+
+									</p>
+
+								<h3>Q6 - Améliorer cet algorithme afin qu’il donne, pour chaque sommet x ∈ X, un plus court chemin de s à x (et non pas seulement la valeur de d(x)).</h3>
+									<p class="justify">
+										 il suffit de lire et de donner le chemin μ jusqu’au x rechercher  
+									</p>
+
+								<h3>Q7 - Interprétation des fonctions δi . En utilisant les résultats des questions 3) et 4) montrer que δi(x) est la plus petite longueur possible pour un chemin de s à x vérifiant la propriété (i) du 3)a), si un tel chemin existe. </h3>
+									<p class="justify">
+
+									</p>
+							</p>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Footer -->
+			<footer>
+				<div class="row">
+					<div class="col-lg-12">
+						<hr>
+						<p>
+							Copyright &copy; - Licence MIT - 2016 / 2017 <br />
+							Projet de S4 - DUT Informatique - Math&eacute;matiques avanc&eacute;es <br />
+							Groupe :  Kyllian CHARTRAIN, Lucas ZETEA et S&eacute;bastien BONATI
+						</p>
+					</div>
+				</div>
+			</footer>
+
+		</div>
+
+	</body>
+</html>
